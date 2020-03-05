@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+  <style>html, body, canvas {
+    margin: 0;
+    width: 100%;
+    height: 100%;
+  }</style>
+</head>
+<body>
+<!--<canvas id="glcanvas"/>-->
+<script src="https://unpkg.com/three/build/three.min.js"></script>
+<script src="https://unpkg.com/gyronorm/dist/gyronorm.complete.min.js"></script>
+<script>
+    (async function contextCreateHandler() {
+
+        // console.log('start')
+        // const canvas = document.querySelector("#glcanvas");
+        // Initialize the GL context
+        // const gl = canvas.getContext("webgl");
+        // initThree
+        const width = window.innerWidth,
+            height = window.innerHeight,
+            aspect = width / height;
+        const renderer = new THREE.WebGLRenderer();
+        renderer.setSize(width, height)
+        document.body.appendChild(renderer.domElement);
+        // const renderer = new ExpoTHREE.Renderer({gl, width:gl.drawingBufferWidth*10, height:gl.drawingBufferHeight*10, pixelRatio: 0.1});
+        // const renderer = new ExpoTHREE.Renderer({gl,scale:1});
+
+
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(45, aspect, 0.01, 1000);
+        camera.position.z = 3;
+        // renderer.setSize(width, height);
+        // document.body.appendChild( renderer.domElement );
+        {
+            const light = new THREE.AmbientLight(0x888888)
+            scene.add(light)
+        }
+        {
+            const light = new THREE.DirectionalLight(0xcccccc, 0.5);
+            light.position.set(5, 3, 5)
+            scene.add(light);
+        }
+
+        // const geometry = new THREE.SphereGeometry(0.5, 32, 32, undefined, 10, undefined, 10)
+        const geometry = new THREE.SphereGeometry(0.5, 32, 32)
+        const material = new THREE.MeshPhongMaterial({
+            // map: await loadTextureAsync({asset: require('./assets/earthmap1k.png')}),
+            // precision:'highp'
+            // reflectivity: 1,
+            // refractionRatio: 0.98,
+            // wireframe:true,
+            // wireframeLinewidth:1,
+            // bumpMap: await loadTextureAsync({asset: require('./assets/earthbump1k.png')}),
+            // specularMap: await loadTextureAsync({asset: require('./assets/earthspec1k.png')}),
+            bumpScale: 0.02,
+            specular: new THREE.Color('grey'),
+            // normalScale: new THREE.Vector2(0.001, 0.001)
+        });
+        material.map = THREE.ImageUtils.loadTexture('./earthmap1k.jpg');
+        material.bumpMap = THREE.ImageUtils.loadTexture('./earthbump1k.jpg');
+        material.specularMap = THREE.ImageUtils.loadTexture('./earthspec1k.jpg');
+        const earthMesh = new THREE.Mesh(geometry, material)
+        // THREE.utils.computeMeshNormals(earthMesh);
+        scene.add(earthMesh)
+        let absolute = 0;
+        let alpha = 0;
+        let beta = 0;
+        let gamma = 0;
+
+        function animate() {
+            // console.warn('animate')
+            // requestAnimationFrame(animate);
+            earthMesh.rotation.z = -alpha / 180 * Math.PI;
+            earthMesh.rotation.x = -beta / 180 * Math.PI;
+            earthMesh.rotation.y = -gamma / 180 * Math.PI;
+
+            // earthMesh.rotation.z = 0;
+            // earthMesh.rotation.x = 0;
+            // earthMesh.rotation.y = 0;
+
+            renderer.render(scene, camera);
+        }
+
+
+        const gn = new GyroNorm();
+
+        gn.init({orientationBase:GyroNorm.WORLD}).then(function () {
+            gn.start(function (data) {
+                absolute = data.do.absolute;
+                alpha = data.do.alpha;
+                beta = data.do.beta;
+                gamma = data.do.gamma;
+                requestAnimationFrame(animate);
+                // Process:
+                // data.do.alpha	( deviceorientation event alpha value )
+                // data.do.beta		( deviceorientation event beta value )
+                // data.do.gamma	( deviceorientation event gamma value )
+                // data.do.absolute	( deviceorientation event absolute value )
+
+                // data.dm.x		( devicemotion event acceleration x value )
+                // data.dm.y		( devicemotion event acceleration y value )
+                // data.dm.z		( devicemotion event acceleration z value )
+
+                // data.dm.gx		( devicemotion event accelerationIncludingGravity x value )
+                // data.dm.gy		( devicemotion event accelerationIncludingGravity y value )
+                // data.dm.gz		( devicemotion event accelerationIncludingGravity z value )
+
+                // data.dm.alpha	( devicemotion event rotationRate alpha value )
+                // data.dm.beta		( devicemotion event rotationRate beta value )
+                // data.dm.gamma	( devicemotion event rotationRate gamma value )
+            });
+        }).catch(function (e) {
+            // Catch if the DeviceOrientation or DeviceMotion is not supported by the browser or device
+        });
+        animate();
+    })()
+</script>
+</body>
+</html>
