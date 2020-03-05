@@ -74,7 +74,7 @@
 
         function animate() {
             // console.warn('animate')
-            // requestAnimationFrame(animate);
+            requestAnimationFrame(animate);
             earthMesh.rotation.z = -alpha / 180 * Math.PI;
             earthMesh.rotation.x = -beta / 180 * Math.PI;
             earthMesh.rotation.y = -gamma / 180 * Math.PI;
@@ -95,7 +95,7 @@
                 alpha = data.do.alpha;
                 beta = data.do.beta;
                 gamma = data.do.gamma;
-                requestAnimationFrame(animate);
+                //requestAnimationFrame(animate);
                 // Process:
                 // data.do.alpha	( deviceorientation event alpha value )
                 // data.do.beta		( deviceorientation event beta value )
