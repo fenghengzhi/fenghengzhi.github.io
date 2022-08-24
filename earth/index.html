@@ -61,9 +61,13 @@
             specular: new THREE.Color('grey'),
             // normalScale: new THREE.Vector2(0.001, 0.001)
         });
-        material.map = THREE.ImageUtils.loadTexture('./earthmap1k.jpg');
-        material.bumpMap = THREE.ImageUtils.loadTexture('./earthbump1k.jpg');
-        material.specularMap = THREE.ImageUtils.loadTexture('./earthspec1k.jpg');
+      
+        material.map = new THREE.TextureLoader().load('./earthmap1k.jpg');
+        material.bumpMap = new THREE.TextureLoader().load('./earthbump1k.jpg');
+        material.specularMap = new THREE.TextureLoader().load('./earthspec1k.jpg');
+//         material.map = THREE.ImageUtils.loadTexture('./earthmap1k.jpg');
+//         material.bumpMap = THREE.ImageUtils.loadTexture('./earthbump1k.jpg');
+//         material.specularMap = THREE.ImageUtils.loadTexture('./earthspec1k.jpg');
         const earthMesh = new THREE.Mesh(geometry, material)
         // THREE.utils.computeMeshNormals(earthMesh);
         scene.add(earthMesh)
